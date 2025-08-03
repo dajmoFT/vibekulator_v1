@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaporwave Kalkulator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+    }
+    #bg-grid {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: -1;
+      background: url('https://i.imgur.com/ASrMn3u.gif') center/cover no-repeat;
+      opacity: 0.25;
+      filter: blur(2px);
+      animation: scrollBg 60s linear infinite;
+    }
+    @keyframes scrollBg {
+      from { background-position-y: 0; }
+      to { background-position-y: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <div id="bg-grid"></div>
+
+  <div class="flex h-screen">
+    <!-- Kalkulator -->
+    <div class="w-2/3 p-8 flex flex-col justify-center">
+      <div id="display" class="bg-black text-green-400 text-3xl p-4 mb-4 border border-green-500 rounded">0</div>
+      <div class="grid grid-cols-4 gap-2">
+        <button class="btn">7</button>
+        <button class="btn">8</button>
+        <button class="btn">9</button>
+        <button class="btn">/</button>
+        <button class="btn">4</button>
+        <button class="btn">5</button>
+        <button class="btn">6</button>
+        <button class="btn">*</button>
+        <button class="btn">1</button>
+        <button class="btn">2</button>
+        <button class="btn">3</button>
+        <button class="btn">-</button>
+        <button class="btn">0</button>
+        <button class="btn">C</button>
+        <button class="btn">=</button>
+        <button class="btn">+</button>
+      </div>
+    </div>
+
+    <!-- Canvas z funkcjami -->
+    <div class="w-1/3 flex items-center justify-center p-4">
+      <canvas id="graphCanvas" class="bg-black w-full h-full"></canvas>
+    </div>
+  </div>
+
+  <!-- Pasek audio -->
+  <div class="fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 p-2 flex items-center justify-between">
+    <audio id="audioPlayer" controls class="w-full">
+      <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/Music_for_Video/Kevin_MacLeod/Space_Jazz/Kevin_MacLeod_-_Space_Jazz_-_01_-_Cipher.mp3" type="audio/mp3">
+      Twoja przeglądarka nie obsługuje odtwarzacza audio.
+    </audio>
+  </div>
+
+  <script>
+    // Kalkulator logiczny
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('.btn');
+    let input = '';
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.textContent;
+        if (val === 'C') input = '';
+        else if (val === '=') {
+          try {
+            input = eval(input).toString();
+          } catch {
+            input = 'ERROR';
+          }
+        } else {
+          input += val;
+        }
+        display.textContent = input || '0';
+      });
+    });
+
+    // Funkcje liniowe w neonowym stylu
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+
+    function drawRandomLine() {
+      const a = (Math.random() - 0.5) * 2;
+      const b = (Math.random() - 0.5) * canvas.height;
+      const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff8800', '#00ff00'];
+      ctx.strokeStyle = colors[Math.floor(Math.random() * colors.length)];
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let x = 0; x < canvas.width; x++) {
+        let y = a * x + b;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    setInterval(() => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawRandomLine();
+    }, 3000);
+  </script>
+</body>
+</html>
